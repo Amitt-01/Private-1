@@ -19,8 +19,8 @@ export default function ERP() {
         </div>
 
         <nav className="flex items-center gap-4">
-          <a href="#features" className="text-sm hover:underline">Features</a>
-          <a href="#modules" className="text-sm hover:underline">Modules</a>
+          <a href="#features" className="text-sm hover:underline">About us</a>
+          <a href="#modules" className="text-sm hover:underline">Contact</a>
           <Link to="/erp/login" className="px-4 py-2 bg-transparent border border-gray-600 rounded-lg text-sm hover:bg-gray-800">ERP Login</Link>
           <Link to="/erp/login" className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg text-sm font-semibold">Take a Demo</Link>
         </nav>
@@ -34,8 +34,8 @@ export default function ERP() {
             <p className="mt-4 text-gray-300 text-lg">Streamline admissions, attendance, exams, results, finance and more — all from a single secure platform. Designed for scale and reliability, with a refined UI that reflects the institution's prestige.</p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <div src="#modules" className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-xl transform hover:-translate-y-0.5 transition">Explore Modules</div>
-              <Link to="#contact" className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gray-600 text-sm text-gray-200 hover:bg-gray-800 transition">Book a Consultation</Link>
+              <a href="#modules" className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-xl transform hover:-translate-y-0.5 transition">Explore Modules</a>
+              <a to="#contact" className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gray-600 text-sm text-gray-200 hover:bg-gray-800 transition">Book a Consultation</a>
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-gray-300">
