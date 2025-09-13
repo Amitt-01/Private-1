@@ -34,8 +34,8 @@ export default function ERP() {
             <p className="mt-4 text-gray-300 text-lg">Streamline admissions, attendance, exams, results, finance and more — all from a single secure platform. Designed for scale and reliability, with a refined UI that reflects the institution's prestige.</p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/erp/login" className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-xl transform hover:-translate-y-0.5 transition">Explore Modules</Link>
-              <Link to="/erp/login" className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gray-600 text-sm text-gray-200 hover:bg-gray-800 transition">ERP Login</Link>
+              <div src="#modules" className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-xl transform hover:-translate-y-0.5 transition">Explore Modules</div>
+              <Link to="#contact" className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gray-600 text-sm text-gray-200 hover:bg-gray-800 transition">Book a Consultation</Link>
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-gray-300">
@@ -119,14 +119,14 @@ export default function ERP() {
         {/* Pricing / Callout */}
         <section className="mt-12 mb-20 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <div className="p-8 rounded-2xl bg-gradient-to-br from-white/5 to-white/3 border border-white/8 shadow-lg">
-            <h3 className="text-2xl font-bold">Enterprise / Premium Plan</h3>
-            <p className="mt-3 text-gray-300">Designed for institutions that want a premium polished experience with dedicated onboarding, SLAs and white-glove support.</p>
+            <h3 className="text-2xl font-bold">What Make us different....</h3>
+            <p className="mt-3 text-gray-300">Designed for institutions which believe's in Transparency and Security</p>
 
             <ul className="mt-4 text-sm text-gray-300 space-y-2">
-              <li>• Dedicated account manager</li>
-              <li>• On-prem or private cloud deployment</li>
-              <li>• Custom integrations (LMS, Payment Gateway, Biometric)</li>
-              <li>• 99.9% uptime SLA</li>
+              <li>• Blockchain Based Authentication</li>
+              <li>• BBA wipe out tampering </li>
+              <li>• All things are at single place (Your Profile , Academics, Progress & Reports)</li>
+              <li>• Simplest User Interface with high User Satisfaction</li>
             </ul>
 
             <div className="mt-6 flex gap-3">
@@ -151,7 +151,7 @@ export default function ERP() {
 
       <footer className="mt-8 py-8 border-t border-white/6">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-400">© {new Date().getFullYear()} Aurora College ERP — All rights reserved.</p>
+          <p className="text-sm text-gray-400">© {new Date().getFullYear()} ARPANAP A College ERP — All rights reserved.</p>
           <div className="flex items-center gap-4 text-sm">
             <Link to="/privacy" className="hover:underline">Privacy</Link>
             <Link to="/terms" className="hover:underline">Terms</Link>
