@@ -2,11 +2,14 @@ import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ERP from './App';
+import './index.css';
 
 // Lazy load routes to split the code into smaller chunks.
 // The code for these pages will only be downloaded when the user navigates to them.
 const LoginPage = lazy(() => import('./LoginPage'));
 const TeacherDashboard = lazy(() => import('./TeacherDashboard'));
+const AboutPage = lazy(() => import('./AboutPage'));
+const ContactPage = lazy(() => import('./ContactPage'));
 
 // A fallback component to show while the lazy-loaded pages are being fetched.
 const LoadingFallback = () => (
@@ -30,6 +33,8 @@ root.render(
           <Route path="/" element={<ERP />} />
           <Route path="/erp/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<TeacherDashboard />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

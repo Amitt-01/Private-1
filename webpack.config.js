@@ -6,6 +6,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
+    publicPath: '/',
     clean: true
   },
   module: {
@@ -14,6 +15,14 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: 'babel-loader'
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource'
       }
     ]
   },
@@ -26,7 +35,8 @@ module.exports = {
     })
   ],
   devServer: {
-    static: './dist',
-    port: 4000
+    static: path.resolve(__dirname, 'public'),
+    port: 4000,
+    historyApiFallback: true
   }
 };

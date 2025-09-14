@@ -19,8 +19,8 @@ export default function ERP() {
         </div>
 
         <nav className="flex items-center gap-4">
-          <a href="#features" className="text-sm hover:underline">About us</a>
-          <a href="#modules" className="text-sm hover:underline">Contact</a>
+          <Link to="/about" className="text-sm hover:underline">About us</Link>
+          <Link to="/contact" className="text-sm hover:underline">Contact</Link>
           <Link to="/erp/login" className="px-4 py-2 bg-transparent border border-gray-600 rounded-lg text-sm hover:bg-gray-800">ERP Login</Link>
           <Link to="/erp/login" className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg text-sm font-semibold">Take a Demo</Link>
         </nav>
@@ -35,7 +35,7 @@ export default function ERP() {
 
             <div className="mt-6 flex flex-wrap gap-3">
               <a href="#modules" className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold shadow-xl transform hover:-translate-y-0.5 transition">Explore Modules</a>
-              <a to="#contact" className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gray-600 text-sm text-gray-200 hover:bg-gray-800 transition">Book a Consultation</a>
+              <a href="#contact-section" className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-gray-600 text-sm text-gray-200 hover:bg-gray-800 transition">Book a Consultation</a>
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-gray-300">
@@ -117,7 +117,7 @@ export default function ERP() {
         </section>
 
         {/* Pricing / Callout */}
-        <section className="mt-12 mb-20 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <section id="contact-section" className="mt-12 mb-20 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <div className="p-8 rounded-2xl bg-gradient-to-br from-white/5 to-white/3 border border-white/8 shadow-lg">
             <h3 className="text-2xl font-bold">What Make us different....</h3>
             <p className="mt-3 text-gray-300">Designed for institutions which believe's in Transparency and Security</p>
@@ -130,8 +130,8 @@ export default function ERP() {
             </ul>
 
             <div className="mt-6 flex gap-3">
-              <Link to="/contact-sales" className="px-5 py-3 rounded-lg bg-yellow-400 text-black font-semibold">Contact Sales</Link>
-              <Link to="/pricing" className="px-5 py-3 rounded-lg border border-white/10">See Pricing</Link>
+              <Link to="/contact" className="px-5 py-3 rounded-lg bg-yellow-400 text-black font-semibold">Contact Sales</Link>
+              <a href="#" className="px-5 py-3 rounded-lg border border-white/10">See Pricing</a>
             </div>
           </div>
 
@@ -153,8 +153,8 @@ export default function ERP() {
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-400">© {new Date().getFullYear()} ARPANAP A College ERP — All rights reserved.</p>
           <div className="flex items-center gap-4 text-sm">
-            <Link to="/privacy" className="hover:underline">Privacy</Link>
-            <Link to="/terms" className="hover:underline">Terms</Link>
+            <a href="#" className="hover:underline">Privacy</a>
+            <a href="#" className="hover:underline">Terms</a>
             <Link to="/contact" className="hover:underline">Contact</Link>
           </div>
         </div>

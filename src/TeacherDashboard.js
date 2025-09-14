@@ -1,31 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
-// Placeholder icons - in a real app, these would be from a library like heroicons
-const DashboardIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-);
-const StudentsIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-);
-const AttendanceIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
-);
-const GradesIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-);
-const TimetableIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-);
-const SettingsIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-);
-const LogoutIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-);
-const ChevronRightIcon = () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-);
+import {
+  DashboardIcon,
+  StudentsIcon,
+  AttendanceIcon,
+  GradesIcon,
+  TimetableIcon,
+  SettingsIcon,
+  LogoutIcon,
+  ChevronRightIcon,
+} from './components/Icons';
 
 // Mock data
 const teacher = {
@@ -51,9 +35,53 @@ const students = [
   { id: "S004", name: "Diana Prince", avatar: "https://i.pravatar.cc/100?u=diana", lastGrade: "C" },
 ];
 
+const assignedClassrooms = [
+  { id: "C101", name: "Grade 10 - Section A", subject: "CS101: Intro to Computer Science", studentCount: 28 },
+  { id: "C203", name: "Grade 11 - Section C", subject: "MA203: Linear Algebra", studentCount: 32 },
+  { id: "C305", name: "Grade 12 - Section A", subject: "CS305: Data Structures", studentCount: 24 },
+];
+
+const examTypes = ["Mid-Term", "Final Exam", "Quiz 1", "Quiz 2", "Assignment 1"];
+
+const weeklyTimetable = {
+  Monday: [
+    { time: "10:00 - 10:50", course: "CS101: Intro to CS", room: "A-101", class: "Grade 10 - A" },
+    { time: "11:00 - 11:50", course: "MA203: Linear Algebra", room: "C-204", class: "Grade 11 - C" },
+  ],
+  Tuesday: [
+    { time: "09:00 - 09:50", course: "CS305: Data Structures", room: "Lab 3", class: "Grade 12 - A" },
+    { time: "11:00 - 11:50", course: "CS101: Intro to CS", room: "A-101", class: "Grade 10 - A" },
+    { time: "14:00 - 15:45", course: "CS305: Data Structures Lab", room: "Lab 3", class: "Grade 12 - A" },
+  ],
+  Wednesday: [
+    { time: "10:00 - 10:50", course: "CS101: Intro to CS", room: "A-101", class: "Grade 10 - A" },
+    { time: "11:00 - 11:50", course: "MA203: Linear Algebra", room: "C-204", class: "Grade 11 - C" },
+  ],
+  Thursday: [
+    { time: "09:00 - 09:50", course: "CS305: Data Structures", room: "Lab 3", class: "Grade 12 - A" },
+    { time: "14:00 - 15:45", course: "CS305: Data Structures Lab", room: "Lab 3", class: "Grade 12 - A" },
+  ],
+  Friday: [ { time: "11:00 - 11:50", course: "MA203: Linear Algebra", room: "C-204", class: "Grade 11 - C" } ],
+  Saturday: [],
+};
+
 export default function TeacherDashboard() {
   const [currentView, setCurrentView] = useState('dashboard');
+  const [announcement, setAnnouncement] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
+  // State for Classroom View
+  const [classroomView, setClassroomView] = useState('view'); // 'view' or 'create'
+  const [newClassroomName, setNewClassroomName] = useState('');
+  const [newClassroomSubject, setNewClassroomSubject] = useState('');
+
+  // State for Upload Marks View
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedStudentId, setSelectedStudentId] = useState('');
+  const [marks, setMarks] = useState('');
+  const [examType, setExamType] = useState(examTypes[0]);
+  const [submittedMarks, setSubmittedMarks] = useState([]);
+  const [showMarksConfirmation, setShowMarksConfirmation] = useState(false);
   // State for Attendance View
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
   const [attendanceData, setAttendanceData] = useState(
@@ -85,6 +113,56 @@ export default function TeacherDashboard() {
       setAttendanceData(students.reduce((acc, student) => { acc[student.id] = 'unmarked'; return acc; }, {}));
   };
 
+  const handleSendAnnouncement = () => {
+    if (announcement.trim() === '') return;
+
+    // In a real app, you'd send this to a server.
+    console.log("Sending announcement:", announcement);
+
+    setShowConfirmation(true);
+    setAnnouncement('');
+
+    setTimeout(() => {
+      setShowConfirmation(false);
+    }, 3000);
+  };
+
+  const handleCreateClassroom = (e) => {
+    e.preventDefault();
+    // In a real app, you'd send this to a server
+    console.log("Creating new classroom:", { name: newClassroomName, subject: newClassroomSubject });
+    // For now, just log it, reset fields, and switch back to the view tab
+    setNewClassroomName('');
+    setNewClassroomSubject('');
+    setClassroomView('view');
+  };
+
+  const handleUploadMarks = (e) => {
+    e.preventDefault();
+    if (!selectedClass || !selectedStudentId || marks.trim() === '') return;
+
+    const student = students.find(s => s.id === selectedStudentId);
+    const classroom = assignedClassrooms.find(c => c.id === selectedClass);
+
+    const newSubmission = {
+        id: `M${Date.now()}`,
+        classroomName: classroom.name,
+        studentName: student.name,
+        examType,
+        marks,
+        timestamp: new Date(),
+    };
+
+    console.log("Uploading marks:", newSubmission);
+    setSubmittedMarks(prev => [newSubmission, ...prev].slice(0, 5)); // Keep last 5
+    
+    setSelectedStudentId('');
+    setMarks('');
+
+    setShowMarksConfirmation(true);
+    setTimeout(() => setShowMarksConfirmation(false), 3000);
+  };
+
   const currentStudent = students[currentStudentIndex];
 
   return (
@@ -104,24 +182,22 @@ export default function TeacherDashboard() {
           <button onClick={() => setCurrentView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${currentView === 'dashboard' ? 'bg-white/10 text-white font-semibold' : 'hover:bg-white/5 text-gray-300'}`}>
             <DashboardIcon /> Dashboard
           </button>
-          <button onClick={() => {}} className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left hover:bg-white/5 text-gray-300">
-            <StudentsIcon /> My Students
+          <button onClick={() => setCurrentView('classroom')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${currentView === 'classroom' ? 'bg-white/10 text-white font-semibold' : 'hover:bg-white/5 text-gray-300'}`}>
+            <StudentsIcon /> Classroom
           </button>
           <button onClick={() => setCurrentView('attendance')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${currentView === 'attendance' ? 'bg-white/10 text-white font-semibold' : 'hover:bg-white/5 text-gray-300'}`}>
             <AttendanceIcon /> Attendance
           </button>
-          <button onClick={() => {}} className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left hover:bg-white/5 text-gray-300">
-            <GradesIcon /> Grades & Exams
+          <button onClick={() => setCurrentView('uploadMarks')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${currentView === 'uploadMarks' ? 'bg-white/10 text-white font-semibold' : 'hover:bg-white/5 text-gray-300'}`}>
+            <GradesIcon /> Upload Marks
           </button>
-          <button onClick={() => {}} className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left hover:bg-white/5 text-gray-300">
+          <button onClick={() => setCurrentView('timetable')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${currentView === 'timetable' ? 'bg-white/10 text-white font-semibold' : 'hover:bg-white/5 text-gray-300'}`}>
             <TimetableIcon /> Timetable
           </button>
         </nav>
 
         <div className="space-y-2">
-          <button onClick={() => {}} className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left hover:bg-white/5 text-gray-300">
-            <SettingsIcon /> Settings
-          </button>
+          
           <Link to="/erp/login" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/5 text-gray-300">
             <LogoutIcon /> Logout
           </Link>
@@ -129,7 +205,7 @@ export default function TeacherDashboard() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col relative">
         {/* Header */}
         <header className="bg-black/10 px-8 py-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold capitalize">{currentView}</h2>
@@ -192,37 +268,7 @@ export default function TeacherDashboard() {
                   </div>
                 </section>
 
-                {/* My Students */}
-                <section>
-                  <h4 className="text-xl font-semibold mb-4">My Students</h4>
-                  <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
-                    <table className="w-full text-left">
-                      <thead className="bg-white/10">
-                        <tr>
-                          <th className="p-3 font-semibold">Name</th>
-                          <th className="p-3 font-semibold">Student ID</th>
-                          <th className="p-3 font-semibold">Last Grade</th>
-                          <th className="p-3 font-semibold"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {students.map((s, i) => (
-                          <tr key={s.id} className="border-t border-white/10">
-                            <td className="p-3 flex items-center gap-3">
-                              <img src={s.avatar} alt={s.name} className="w-8 h-8 rounded-full" />
-                              {s.name}
-                            </td>
-                            <td className="p-3 text-gray-400">{s.id}</td>
-                            <td className="p-3 font-mono">{s.lastGrade}</td>
-                            <td className="p-3 text-right">
-                              <a href="#" className="text-purple-400 hover:underline text-sm">View Profile</a>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
+               
               </div>
 
               {/* Right Column */}
@@ -230,14 +276,20 @@ export default function TeacherDashboard() {
                 {/* Quick Actions */}
                 <section>
                   <h4 className="text-xl font-semibold mb-4">Quick Actions</h4>
-                  <div className="p-6 rounded-xl bg-white/5 border border-white/10 h-64 flex items-center justify-center text-gray-400">
-                    Announcement
-                  </div>
-                  <div className="space-y-2 space-x-2">
-
-                    <a href="#" className="block p-4 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition">
-                      Send 
-                    </a>
+                  <div className="space-y-4">
+                    <textarea
+                      className="w-full h-32 p-4 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-gray-100 placeholder-gray-400"
+                      placeholder="Type your announcement here..."
+                      value={announcement}
+                      onChange={(e) => setAnnouncement(e.target.value)}
+                    />
+                    <button
+                      onClick={handleSendAnnouncement}
+                      disabled={!announcement.trim()}
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline shadow-lg transform hover:-translate-y-0.5 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Send Announcement
+                    </button>
                   </div>
                 </section>
 
@@ -245,6 +297,149 @@ export default function TeacherDashboard() {
                 <section>
                   
                   
+                </section>
+              </div>
+            </div>
+          </main>
+        )}
+
+        {currentView === 'classroom' && (
+          <main className="flex-1 p-8 flex gap-8">
+            {/* Sub-sidebar for classroom management */}
+            <aside className="w-1/4 max-w-xs bg-black/10 p-6 rounded-2xl flex flex-col">
+              <h4 className="text-lg font-semibold mb-6">Classroom Tools</h4>
+              <nav className="space-y-2">
+                <button
+                  onClick={() => setClassroomView('view')}
+                  className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${classroomView === 'view' ? 'bg-white/10' : 'hover:bg-white/5'}`}
+                >
+                  View Assigned
+                </button>
+                <button
+                  onClick={() => setClassroomView('create')}
+                  className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${classroomView === 'create' ? 'bg-white/10' : 'hover:bg-white/5'}`}
+                >
+                  Create New
+                </button>
+              </nav>
+            </aside>
+
+            {/* Classroom content area */}
+            <section className="flex-1 bg-black/10 p-8 rounded-2xl">
+              {classroomView === 'view' && (
+                <div>
+                  <h3 className="text-2xl font-bold mb-6">Assigned Classrooms</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {assignedClassrooms.map(classroom => (
+                      <div key={classroom.id} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all transform hover:-translate-y-1 cursor-pointer">
+                        <h5 className="text-xl font-bold text-purple-300">{classroom.name}</h5>
+                        <p className="text-gray-300 mt-1 truncate">{classroom.subject}</p>
+                        <div className="mt-4 flex justify-between items-center">
+                          <p className="text-sm text-gray-400">{classroom.studentCount} Students</p>
+                          <button className="px-4 py-1 text-sm rounded-md bg-purple-600 hover:bg-purple-500 transition">Manage</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {classroomView === 'create' && (
+                <div>
+                  <h3 className="text-2xl font-bold mb-6">Create a New Classroom</h3>
+                  <form onSubmit={handleCreateClassroom} className="max-w-lg space-y-6">
+                    <div>
+                      <label htmlFor="classroom-name" className="block text-gray-300 text-sm font-bold mb-2">Classroom Name</label>
+                      <input id="classroom-name" type="text" value={newClassroomName} onChange={(e) => setNewClassroomName(e.target.value)} placeholder="e.g., Grade 10 - Section B" required className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                    </div>
+                    <div>
+                      <label htmlFor="classroom-subject" className="block text-gray-300 text-sm font-bold mb-2">Subject</label>
+                      <input id="classroom-subject" type="text" value={newClassroomSubject} onChange={(e) => setNewClassroomSubject(e.target.value)} placeholder="e.g., Advanced Physics" required className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                    </div>
+                    <div>
+                      <button type="submit" disabled={!newClassroomName.trim() || !newClassroomSubject.trim()} className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline shadow-lg transform hover:-translate-y-0.5 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        Create Classroom
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </section>
+          </main>
+        )}
+
+        {currentView === 'uploadMarks' && (
+          <main className="flex-1 p-8 overflow-y-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+              {/* Upload Form Section */}
+              <div className="lg:col-span-3">
+                <section className="bg-black/10 p-8 rounded-2xl shadow-lg">
+                  <h3 className="text-2xl font-bold mb-6">Upload Student Marks</h3>
+                  <form onSubmit={handleUploadMarks} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="class-select" className="block text-gray-300 text-sm font-bold mb-2">Classroom</label>
+                        <select id="class-select" value={selectedClass} onChange={e => { setSelectedClass(e.target.value); setSelectedStudentId(''); }} required className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500">
+                          <option value="" disabled>Select a class</option>
+                          {assignedClassrooms.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="exam-select" className="block text-gray-300 text-sm font-bold mb-2">Exam / Assignment</label>
+                        <select id="exam-select" value={examType} onChange={e => setExamType(e.target.value)} required className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500">
+                          {examTypes.map(e => <option key={e} value={e}>{e}</option>)}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="student-select" className="block text-gray-300 text-sm font-bold mb-2">Student</label>
+                        <select id="student-select" value={selectedStudentId} onChange={e => setSelectedStudentId(e.target.value)} required disabled={!selectedClass} className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-800/20 disabled:cursor-not-allowed">
+                          <option value="" disabled>Select a student</option>
+                          {/* In a real app, you'd filter students by selectedClass */}
+                          {students.map(s => <option key={s.id} value={s.id}>{s.name} ({s.id})</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="marks-input" className="block text-gray-300 text-sm font-bold mb-2">Marks</label>
+                        <input id="marks-input" type="number" value={marks} onChange={e => setMarks(e.target.value)} placeholder="Enter marks (e.g., 85)" required disabled={!selectedStudentId} className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-800/20 disabled:cursor-not-allowed" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <button type="submit" disabled={!marks.trim()} className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline shadow-lg transform hover:-translate-y-0.5 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        Upload Marks
+                      </button>
+                    </div>
+                  </form>
+                </section>
+              </div>
+
+              {/* Recent Uploads Section */}
+              <div className="lg:col-span-2">
+                <section className="bg-black/10 p-6 rounded-2xl shadow-lg h-full">
+                  <h3 className="text-xl font-bold mb-4">Recent Uploads</h3>
+                  {submittedMarks.length === 0 ? (
+                    <div className="flex items-center justify-center h-4/5">
+                      <p className="text-gray-400 text-center">No marks uploaded yet.</p>
+                    </div>
+                  ) : (
+                    <ul className="space-y-3">
+                      {submittedMarks.map(sub => (
+                        <li key={sub.id} className="bg-white/5 p-4 rounded-lg border border-white/10">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold">{sub.studentName}</p>
+                              <p className="text-sm text-gray-300 truncate">{sub.classroomName}</p>
+                              <p className="text-xs text-gray-400 mt-1">{sub.examType}</p>
+                            </div>
+                            <p className="text-lg font-bold text-green-400">{sub.marks}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </section>
               </div>
             </div>
@@ -311,6 +506,55 @@ export default function TeacherDashboard() {
               )}
             </div>
           </main>
+        )}
+
+        {currentView === 'timetable' && (
+          <main className="flex-1 p-8 overflow-y-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-2xl font-bold">Weekly Timetable</h3>
+              <button
+                onClick={() => alert('Change request functionality not implemented yet.')}
+                className="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold shadow-lg transform hover:-translate-y-0.5 transition"
+              >
+                Request Change
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              {Object.entries(weeklyTimetable).map(([day, lectures]) => (
+                <div key={day} className="bg-black/10 rounded-xl p-4 flex flex-col">
+                  <h4 className="font-bold text-center text-lg mb-4 border-b border-white/10 pb-2">{day}</h4>
+                  <div className="space-y-3 flex-grow">
+                    {lectures.length > 0 ? (
+                      lectures.map((lecture, index) => (
+                        <div key={index} className="bg-white/5 p-3 rounded-lg border border-transparent hover:border-purple-500 transition-all cursor-default">
+                          <p className="font-semibold text-sm">{lecture.time}</p>
+                          <p className="text-purple-300 text-xs truncate mt-1">{lecture.course}</p>
+                          <p className="text-gray-400 text-xs mt-1">{lecture.class} &middot; Room: {lecture.room}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-500 text-sm"><p>No classes</p></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </main>
+        )}
+
+        {/* Announcement Confirmation Popup */}
+        {showConfirmation && (
+          <div className="absolute bottom-8 right-8 z-10 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+            Announcement sent successfully!
+          </div>
+        )}
+
+        {/* Marks Confirmation Popup */}
+        {showMarksConfirmation && (
+          <div className="absolute bottom-8 right-8 z-10 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+            Marks uploaded successfully!
+          </div>
         )}
       </div>
     </div>
