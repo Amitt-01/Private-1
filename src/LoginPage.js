@@ -5,6 +5,7 @@ import credentials from "./credentials.json";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("teacher");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -12,12 +13,21 @@ export default function LoginPage() {
     event.preventDefault();
     setError(""); // Clear previous errors
 
+    // Role-based login check
     if (
-      username === credentials.teacher.username &&
-      password === credentials.teacher.password
+      credentials[role] &&
+      username === credentials[role].username &&
+      password === credentials[role].password
     ) {
-      // On successful login, redirect to the dashboard
-      navigate("/dashboard");
+      // On successful login, redirect to the appropriate dashboard
+      if (role === 'student') {
+        navigate('/student-dashboard');
+      } else if (role === 'HR') {
+        navigate('/hr-dashboard');
+      } else {
+        // For teacher and other roles for now
+        navigate('/dashboard');
+      }
     } else {
       setError("Invalid username or password.");
     }
@@ -55,7 +65,6 @@ export default function LoginPage() {
             <p className="text-sm text-gray-300">The future of Education Management</p>
           </div>
         </Link>
-
         <div className="bg-black/20 p-8 rounded-2xl shadow-2xl border border-white/10">
           <h2 className="text-2xl font-bold text-center mb-1">Welcome Back</h2>
           <p className="text-center text-gray-400 mb-6">Login to your account</p>
@@ -66,14 +75,32 @@ export default function LoginPage() {
               </div>
             )}
             <div className="mb-4">
+              <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="role">
+                Role
+              </label>
+              <select
+                className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+                <option value="HR">H R</option>
+                <option value="registrar">Registrar</option>
+                <option value="accounts">Accountant</option>
+                <option value="library">Librarian</option>
+              </select>
+            </div>
+            <div className="mb-4">
               <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="username">
-                Email or Username
+                Username
               </label>
               <input
                 className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
                 id="username"
                 type="text"
-                placeholder="you@example.com"
+                placeholder="Enter your username"
                 autoComplete="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}

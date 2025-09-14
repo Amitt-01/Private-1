@@ -6,15 +6,19 @@ import {
   AttendanceIcon,
   GradesIcon,
   TimetableIcon,
-  SettingsIcon,
   LogoutIcon,
   ChevronRightIcon,
-} from './components/Icons';
+} from './components/Icons'; // Centralized icons
+import teacherAvatar from './assets/teacher-mohd-parvej-avatar.jpg';
+import alexJohnsonAvatar from './assets/alex-johnson-avatar.jpg';
+import brendaSmithAvatar from './assets/brenda-smith-avatar.jpg';
+import carlosGomezAvatar from './assets/carlos-gomez-avatar.jpg';
+import dianaPrinceAvatar from './assets/diana-prince-avatar.jpg';
 
 // Mock data
 const teacher = {
   name: "Dr. Mohd. Parvej",
-  avatarUrl: "https://i.pravatar.cc/100?u=evelynreed",
+  avatarUrl:  teacherAvatar,
   stats: {
     students: 84,
     courses: 4,
@@ -29,10 +33,10 @@ const upcomingClasses = [
 ];
 
 const students = [
-  { id: "S001", name: "Alex Johnson", avatar: "https://i.pravatar.cc/100?u=alex", lastGrade: "A" },
-  { id: "S002", name: "Brenda Smith", avatar: "https://i.pravatar.cc/100?u=brenda", lastGrade: "B+" },
-  { id: "S003", name: "Carlos Gomez", avatar: "https://i.pravatar.cc/100?u=carlos", lastGrade: "A-" },
-  { id: "S004", name: "Diana Prince", avatar: "https://i.pravatar.cc/100?u=diana", lastGrade: "C" },
+  { id: "S001", name: "Alex Johnson", avatar: alexJohnsonAvatar, lastGrade: "A" },
+  { id: "S002", name: "Brenda Smith", avatar: brendaSmithAvatar, lastGrade: "B+" },
+  { id: "S003", name: "Carlos Gomez", avatar: carlosGomezAvatar, lastGrade: "A-" },
+  { id: "S004", name: "Diana Prince", avatar: dianaPrinceAvatar, lastGrade: "C" },
 ];
 
 const assignedClassrooms = [
@@ -70,6 +74,14 @@ export default function TeacherDashboard() {
   const [announcement, setAnnouncement] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
 
+  // State for classroom management
+  const [selectedClassroom, setSelectedClassroom] = useState(null);
+
+  // State for adding a student
+  const [studentIdToSearch, setStudentIdToSearch] = useState('');
+  const [searchedStudent, setSearchedStudent] = useState(null);
+  const [searchError, setSearchError] = useState('');
+  const [studentAdded, setStudentAdded] = useState(false);
   // State for Classroom View
   const [classroomView, setClassroomView] = useState('view'); // 'view' or 'create'
   const [newClassroomName, setNewClassroomName] = useState('');
@@ -111,6 +123,38 @@ export default function TeacherDashboard() {
   const resetAttendance = () => {
       setCurrentStudentIndex(0);
       setAttendanceData(students.reduce((acc, student) => { acc[student.id] = 'unmarked'; return acc; }, {}));
+  };
+
+  const handleManageClassroom = (classroom) => {
+    setSelectedClassroom(classroom);
+    setCurrentView('manageClassroom');
+  };
+
+  const handleSearchStudent = (e) => {
+    e.preventDefault();
+    setSearchError('');
+    setSearchedStudent(null);
+    setStudentAdded(false);
+
+    // Simulate finding a student from the mock data
+    const foundStudent = students.find(s => s.id.toLowerCase() === studentIdToSearch.toLowerCase());
+
+    if (foundStudent) {
+      setSearchedStudent(foundStudent);
+    } else {
+      setSearchError(`Student with ID "${studentIdToSearch}" not found.`);
+    }
+  };
+
+  const handleAddStudentToClass = () => {
+    // In a real app, you'd make an API call to add `searchedStudent.id` to `selectedClassroom.id`
+    console.log(`Adding student ${searchedStudent.name} (${searchedStudent.id}) to classroom ${selectedClassroom.name}`);
+    setStudentAdded(true);
+    setSearchedStudent(null);
+    setStudentIdToSearch('');
+    setTimeout(() => {
+      setStudentAdded(false);
+    }, 3000);
   };
 
   const handleSendAnnouncement = () => {
@@ -208,7 +252,12 @@ export default function TeacherDashboard() {
       <div className="flex-1 flex flex-col relative">
         {/* Header */}
         <header className="bg-black/10 px-8 py-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold capitalize">{currentView}</h2>
+          <h2 className="text-2xl font-bold capitalize">
+            {currentView === 'manageClassroom' ? `Manage: ${selectedClassroom?.name}`
+            : currentView === 'addStudent' ? `Add Student to ${selectedClassroom?.name}`
+            : currentView === 'uploadMarks' ? 'Upload Marks'
+            : currentView}
+          </h2>
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p className="font-semibold">{teacher.name}</p>
@@ -336,7 +385,7 @@ export default function TeacherDashboard() {
                         <p className="text-gray-300 mt-1 truncate">{classroom.subject}</p>
                         <div className="mt-4 flex justify-between items-center">
                           <p className="text-sm text-gray-400">{classroom.studentCount} Students</p>
-                          <button className="px-4 py-1 text-sm rounded-md bg-purple-600 hover:bg-purple-500 transition">Manage</button>
+                          <button onClick={() => handleManageClassroom(classroom)} className="px-4 py-1 text-sm rounded-md bg-purple-600 hover:bg-purple-500 transition">Manage</button>
                         </div>
                       </div>
                     ))}
@@ -365,6 +414,113 @@ export default function TeacherDashboard() {
                 </div>
               )}
             </section>
+          </main>
+        )}
+
+        {currentView === 'manageClassroom' && selectedClassroom && (
+          <main className="flex-1 p-8 overflow-y-auto">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <button onClick={() => setCurrentView('classroom')} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  <span>Back to Classrooms</span>
+                </button>
+                <h3 className="text-3xl font-bold">Manage: {selectedClassroom.name}</h3>
+                <p className="text-gray-300">{selectedClassroom.subject}</p>
+              </div>
+              <button
+                onClick={() => setCurrentView('addStudent')}
+                className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg transform hover:-translate-y-0.5 transition"
+              >
+                Add New Student
+              </button>
+            </div>
+
+            <section className="bg-black/10 p-8 rounded-2xl">
+              <h4 className="text-xl font-semibold mb-6">Enrolled Students</h4>
+              {/* In a real app, you would fetch students for the selectedClassroom.id */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {students.map(student => (
+                  <div key={student.id} className="bg-white/5 p-4 rounded-xl border border-white/10 flex items-center gap-4">
+                    <img src={student.avatar} alt={student.name} className="w-12 h-12 rounded-full" />
+                    <div>
+                      <p className="font-semibold">{student.name}</p>
+                      <p className="text-sm text-gray-400">ID: {student.id}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </main>
+        )}
+
+        {currentView === 'addStudent' && selectedClassroom && (
+          <main className="flex-1 p-8 overflow-y-auto">
+            <div className="mb-8">
+              <button onClick={() => setCurrentView('manageClassroom')} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Back to Manage Classroom</span>
+              </button>
+              <h3 className="text-3xl font-bold">Add Student to {selectedClassroom.name}</h3>
+            </div>
+
+            <div className="max-w-2xl mx-auto">
+              <section className="bg-black/10 p-8 rounded-2xl shadow-lg mb-8">
+                <h4 className="text-xl font-semibold mb-6">Find Student by ID</h4>
+                <form onSubmit={handleSearchStudent} className="flex gap-4">
+                  <input
+                    type="text"
+                    value={studentIdToSearch}
+                    onChange={(e) => setStudentIdToSearch(e.target.value)}
+                    placeholder="Enter Student ID (e.g., S001)"
+                    required
+                    className="flex-grow shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                  <button
+                    type="submit"
+                    className="px-8 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg text-sm font-semibold transform hover:-translate-y-0.5 transition disabled:opacity-50"
+                    disabled={!studentIdToSearch.trim()}
+                  >
+                    Search
+                  </button>
+                </form>
+              </section>
+
+              {searchError && (
+                <div className="bg-red-500/20 border border-red-500/50 text-red-300 text-sm rounded-lg p-4 mb-8 text-center">
+                  {searchError}
+                </div>
+              )}
+
+              {searchedStudent && (
+                <section className="bg-black/10 p-8 rounded-2xl shadow-lg border border-white/10">
+                  <h4 className="text-xl font-semibold mb-6 text-center">Student Details</h4>
+                  <div className="flex flex-col items-center gap-4">
+                    <img src={searchedStudent.avatar} alt={searchedStudent.name} className="w-24 h-24 rounded-full border-2 border-purple-400" />
+                    <h5 className="text-2xl font-bold">{searchedStudent.name}</h5>
+                    <p className="text-gray-400">ID: {searchedStudent.id}</p>
+                    <p className="text-gray-300">Last Recorded Grade: <span className="font-bold text-green-400">{searchedStudent.lastGrade}</span></p>
+                    {/* In a real app, more details would be shown here */}
+                    <button
+                      onClick={handleAddStudentToClass}
+                      className="mt-4 w-full max-w-xs bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg transform hover:-translate-y-0.5 transition"
+                    >
+                      Add to Classroom
+                    </button>
+                  </div>
+                </section>
+              )}
+
+              {studentAdded && (
+                <div className="mt-8 bg-green-500/20 border border-green-500/50 text-green-300 text-sm rounded-lg p-4 text-center">
+                  Student added successfully!
+                </div>
+              )}
+            </div>
           </main>
         )}
 

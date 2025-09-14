@@ -8,8 +8,10 @@ import './index.css';
 // The code for these pages will only be downloaded when the user navigates to them.
 const LoginPage = lazy(() => import('./LoginPage'));
 const TeacherDashboard = lazy(() => import('./TeacherDashboard'));
+const StudentDashboard = lazy(() => import('./StudentDashboard'));
 const AboutPage = lazy(() => import('./AboutPage'));
 const ContactPage = lazy(() => import('./ContactPage'));
+const HRDashboard = lazy(() => import('./HRDashboard'));
 
 // A fallback component to show while the lazy-loaded pages are being fetched.
 const LoadingFallback = () => (
@@ -32,9 +34,11 @@ root.render(
         <Routes>
           <Route path="/" element={<ERP />} />
           <Route path="/erp/login" element={<LoginPage />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
           <Route path="/dashboard" element={<TeacherDashboard />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/hr-dashboard" element={<HRDashboard />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

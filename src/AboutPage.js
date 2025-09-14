@@ -1,6 +1,8 @@
 import React from 'react';
 import rohitAvatar from './assets/rohit.jpg';
 import PageLayout from './components/PageLayout';
+import amitAvatar from './assets/amit-kumar-avatar.jpg';
+import abhishekAvatar from './assets/abhishek-yadav-avatar.jpg';
 
 // Placeholder for team member avatars
 const teamMembers = [
@@ -13,13 +15,13 @@ const teamMembers = [
   {
     name: 'Amit Kumar',
     role: 'UX/UI Designer',
-    avatar: 'https://i.pravatar.cc/150?u=jane',
+    avatar: amitAvatar,
     bio: 'Amit crafts the intuitive and beautiful interfaces of ARPANAP. His focus is on creating a user-friendly experience that delights students, teachers, and administrators alike.',
   },
   {
     name: 'Abhishek Yadav',
     role: 'Backend & Security Specialist',
-    avatar: 'https://i.pravatar.cc/150?u=john',
+    avatar: abhishekAvatar,
     bio: 'Abhishek ensures the robustness and security of the ARPANAP platform. His work on blockchain integration is key to our promise of unbreakable trust.',
   },
 ];
