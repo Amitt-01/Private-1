@@ -7,7 +7,7 @@ import {
   LogoutIcon,
   FeeIcon,
   CalendarIcon,
-} from './Icons';
+} from './components/Icons';
 import brendaSmithAvatar from './assets/brenda-smith-avatar.jpg';
 
 // Mock Data for Student

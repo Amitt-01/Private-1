@@ -9,7 +9,7 @@ import {
   PrinterIcon,
   CalendarIcon,
   ChevronRightIcon,
-} from './Icons';
+} from './components/Icons';
 import dianaPrinceAvatar from './assets/diana-prince-avatar.jpg';
 import alexJohnsonAvatar from './assets/alex-johnson-avatar.jpg';
 import brendaSmithAvatar from './assets/brenda-smith-avatar.jpg';

@@ -8,7 +8,7 @@ import {
   TimetableIcon,
   LogoutIcon,
   ChevronRightIcon,
-} from './Icons'; // Centralized icons
+} from './components/Icons'; // Centralized icons
 import teacherAvatar from './assets/teacher-mohd-parvej-avatar.jpg';
 import alexJohnsonAvatar from './assets/alex-johnson-avatar.jpg';
 import brendaSmithAvatar from './assets/brenda-smith-avatar.jpg';
