@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ERP from './App';
 import './index.css';
+import RegistrarDashboard from './RegistrarDashboard';
 
 // Lazy load routes to split the code into smaller chunks.
 // The code for these pages will only be downloaded when the user navigates to them.
@@ -38,7 +39,8 @@ root.render(
           <Route path="/dashboard" element={<TeacherDashboard />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/hr-dashboard" element={<HRDashboard />} />
+          <Route path="/hr-dashboard" element={<HRDashboard />} /> 
+          <Route path="/registrar-dashboard" element={<RegistrarDashboard/>} /> 
         </Routes>
       </Suspense>
     </BrowserRouter>

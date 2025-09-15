@@ -9,8 +9,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError(""); // Clear previous errors
 
     // Role-based login check
@@ -24,9 +24,9 @@ export default function LoginPage() {
         navigate('/student-dashboard');
       } else if (role === 'HR') {
         navigate('/hr-dashboard');
-      } else {
+      } else if( role === 'registrar') {
         // For teacher and other roles for now
-        navigate('/dashboard');
+        navigate('/registrar-dashboard');
       }
     } else {
       setError("Invalid username or password.");
