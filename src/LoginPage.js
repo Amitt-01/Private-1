@@ -20,13 +20,17 @@ export default function LoginPage() {
       password === credentials[role].password
     ) {
       // On successful login, redirect to the appropriate dashboard
-      if (role === 'student') {
-        navigate('/student-dashboard');
-      } else if (role === 'HR') {
-        navigate('/hr-dashboard');
-      } else if( role === 'registrar') {
-        // For teacher and other roles for now
-        navigate('/registrar-dashboard');
+      const dashboardPath = {
+        student: '/student-dashboard',
+        teacher: '/teacher-dashboard',
+        HR: '/hr-dashboard',
+        registrar: '/registrar-dashboard',
+      }[role];
+
+      if (dashboardPath) {
+        navigate(dashboardPath);
+      } else {
+        setError(`Dashboard for role "${role}" is not available yet.`);
       }
     } else {
       setError("Invalid username or password.");

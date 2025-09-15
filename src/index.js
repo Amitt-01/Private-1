@@ -36,7 +36,7 @@ root.render(
           <Route path="/" element={<ERP />} />
           <Route path="/erp/login" element={<LoginPage />} />
           <Route path="/student-dashboard" element={<StudentDashboard />} />
-          <Route path="/dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/hr-dashboard" element={<HRDashboard />} /> 
