@@ -9,8 +9,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError(""); // Clear previous errors
 
     // Role-based login check
@@ -20,13 +20,18 @@ export default function LoginPage() {
       password === credentials[role].password
     ) {
       // On successful login, redirect to the appropriate dashboard
-      if (role === 'student') {
-        navigate('/student-dashboard');
-      } else if (role === 'HR') {
-        navigate('/hr-dashboard');
+      const dashboardPath = {
+        student: '/student-dashboard',
+        teacher: '/teacher-dashboard',
+        HR: '/hr-dashboard',
+        registrar: '/registrar-dashboard',
+        accounts: '/accountant-dashboard',
+      }[role];
+
+      if (dashboardPath) {
+        navigate(dashboardPath);
       } else {
-        // For teacher and other roles for now
-        navigate('/dashboard');
+        setError(`Dashboard for role "${role}" is not available yet.`);
       }
     } else {
       setError("Invalid username or password.");

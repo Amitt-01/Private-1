@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ERP from './App';
 import './index.css';
+import RegistrarDashboard from './RegistrarDashboard';
 
 // Lazy load routes to split the code into smaller chunks.
 // The code for these pages will only be downloaded when the user navigates to them.
@@ -12,6 +13,7 @@ const StudentDashboard = lazy(() => import('./StudentDashboard'));
 const AboutPage = lazy(() => import('./AboutPage'));
 const ContactPage = lazy(() => import('./ContactPage'));
 const HRDashboard = lazy(() => import('./HRDashboard'));
+const AcDashboard = lazy(() => import('./AccountantDashboard'));
 
 // A fallback component to show while the lazy-loaded pages are being fetched.
 const LoadingFallback = () => (
@@ -35,10 +37,12 @@ root.render(
           <Route path="/" element={<ERP />} />
           <Route path="/erp/login" element={<LoginPage />} />
           <Route path="/student-dashboard" element={<StudentDashboard />} />
-          <Route path="/dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/hr-dashboard" element={<HRDashboard />} />
+          <Route path="/hr-dashboard" element={<HRDashboard />} /> 
+          <Route path="/registrar-dashboard" element={<RegistrarDashboard/>} /> 
+          <Route path="/accountant-dashboard" element={<AcDashboard/>} />
         </Routes>
       </Suspense>
     </BrowserRouter>
