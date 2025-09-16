@@ -25,6 +25,7 @@ export default function LoginPage() {
         teacher: '/teacher-dashboard',
         HR: '/hr-dashboard',
         registrar: '/registrar-dashboard',
+        library: '/librarian-dashboard',
       }[role];
 
       if (dashboardPath) {
