@@ -253,10 +253,11 @@ export default function TeacherDashboard() {
         {/* Header */}
         <header className="bg-black/10 px-8 py-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold capitalize">
-            {currentView === 'manageClassroom' ? `Manage: ${selectedClassroom?.name}`
-            : currentView === 'addStudent' ? `Add Student to ${selectedClassroom?.name}`
-            : currentView === 'uploadMarks' ? 'Upload Marks'
-            : currentView}
+            {currentView === 'manageClassroom'
+              ? `Manage Classroom`
+              : currentView === 'addStudent'
+              ? `Add Student`
+              : currentView.replace(/([A-Z])/g, ' $1')}
           </h2>
           <div className="flex items-center gap-4">
             <div className="text-right">

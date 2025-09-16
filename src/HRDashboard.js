@@ -152,7 +152,9 @@ export default function HRDashboard() {
       <div className="flex-1 flex flex-col relative">
         <header className="bg-black/10 px-8 py-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold capitalize">
-            {currentView === 'employeeProfile' ? `Employee Profile: ${selectedEmployee?.name}` : currentView.replace(/([A-Z])/g, ' $1')}
+            {currentView === 'employeeProfile'
+              ? `Employee Profile`
+              : currentView.replace(/([A-Z])/g, ' $1')}
           </h2>
           <div className="flex items-center gap-4">
             <div className="text-right">
@@ -287,12 +289,14 @@ const EmployeesView = ({ employees, getStatusColor, onViewEmployee }) => (
 
 const EmployeeProfileView = ({ employee, getStatusColor, onBack }) => (
   <section>
-    <button onClick={onBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group mb-6">
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-      </svg>
-      <span>Back to Employee Directory</span>
-    </button>
+    <div className="flex items-center justify-between mb-6">
+      <button onClick={onBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Back to Employee Directory</span>
+      </button>
+    </div>
     <div className="bg-black/20 p-8 rounded-2xl border border-white/10 text-center">
       <p className="text-gray-400">Detailed employee profile view is under construction.</p>
       <p className="text-gray-300 mt-4">This section will display comprehensive details for <span className="font-bold text-purple-300">{employee.name}</span>, including personal information, contact details, job history, performance reviews, and assigned assets.</p>

@@ -52,6 +52,30 @@ const documentRequests = [
   { id: 'D004', student: 'Carlos Gomez', studentId: 'S003', documentType: 'Degree Certificate', status: 'Generated', requestDate: '2024-05-15' },
 ];
 
+const academicCalendars = [
+  { id: 'AC01', department: 'Computer Science', year: '2024-2025', status: 'Published', lastUpdated: '2024-04-15' },
+  { id: 'AC02', department: 'Mechanical Engineering', year: '2024-2025', status: 'Published', lastUpdated: '2024-04-18' },
+  { id: 'AC03', department: 'Physics', year: '2024-2025', status: 'Draft', lastUpdated: '2024-05-10' },
+  { id: 'AC04', department: 'English', year: '2023-2024', status: 'Archived', lastUpdated: '2023-06-01' },
+];
+
+
+const allCalendarEvents = [
+  // Computer Science 2024-2025
+  { id: 'E01', calendarId: 'AC01', date: '2024-08-20', title: 'Start of Fall Semester' },
+  { id: 'E02', calendarId: 'AC01', date: '2024-09-05', title: 'Labor Day - Holiday' },
+  { id: 'E03', calendarId: 'AC01', date: '2024-10-15', title: 'Mid-term Exams Begin' },
+  { id: 'E04', calendarId: 'AC01', date: '2024-12-20', title: 'End of Fall Semester' },
+
+  // Mechanical Engineering 2024-2025
+  { id: 'E05', calendarId: 'AC02', date: '2024-08-22', title: 'Department Orientation' },
+  { id: 'E06', calendarId: 'AC02', date: '2025-03-10', title: 'Spring Break' },
+  { id: 'E07', calendarId: 'AC02', date: '2025-05-15', title: 'End of Spring Semester' },
+
+  // Physics 2024-2025 (Draft)
+  { id: 'E08', calendarId: 'AC03', date: '2024-08-20', title: 'Tentative: Start of Classes' },
+];
+
 export default function RegistrarDashboard() {
   const [currentView, setCurrentView] = useState('dashboard');
 
@@ -163,12 +187,12 @@ const DashboardView = ({ stats }) => (
       <StatCard label="Courses Offered" value={stats.coursesOffered} icon={<BookOpenIcon />} />
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="bg-black/20 p-6 rounded-2xl border border-white/10">
+      <div className="bg-black/20  p-6 rounded-2xl border border-white/10">
         <h4 className="text-xl font-semibold mb-4">Quick Actions</h4>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col  gap-4">
           <button className="p-4 bg-white/5 rounded-lg text-center hover:bg-white/10 transition font-semibold">Register New Student</button>
           <button className="p-4 bg-white/5 rounded-lg text-center hover:bg-white/10 transition font-semibold">Add New Course</button>
-          <button className="p-4 bg-white/5 rounded-lg text-center hover:bg-white/10 transition font-semibold">Generate Transcript</button>
+         
           <button className="p-4 bg-white/5 rounded-lg text-center hover:bg-white/10 transition font-semibold">View Academic Calendar</button>
         </div>
       </div>
@@ -203,7 +227,7 @@ const StudentRecordsView = ({ students, getStatusColor }) => {
     <section>
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-bold">Student Records</h3>
-        <input type="search" placeholder="Search by name, ID, or program..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-1/3 shadow-inner appearance-none border border-gray-700 rounded-lg py-2 px-4 bg-gray-800/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        <input type="search" placeholder="Search by name, ID, or program..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-1/2 shadow-inner appearance-none border border-gray-700 rounded-lg py-2 px-4 bg-gray-800/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500" />
       </div>
       <div className="bg-black/20 p-6 rounded-2xl border border-white/10">
         <div className="grid grid-cols-5 gap-4 font-semibold text-gray-400 px-4 py-2 border-b border-white/10 mb-2">
@@ -312,9 +336,225 @@ const GraduationAuditView = () => (
   />
 );
 
-const AcademicCalendarView = () => (
-  <PlaceholderView
-    title="Academic Calendar"
-    message="This module is under construction. It will display and manage key academic dates, holidays, and deadlines."
-  />
-);
+const AcademicCalendarView = () => {
+  const [view, setView] = useState('list'); // 'list', 'createCalendar', 'manage', 'view'
+  const [selectedCalendar, setSelectedCalendar] = useState(null);
+  const [events, setEvents] = useState(allCalendarEvents);
+  const [confirmation, setConfirmation] = useState('');
+
+  // State for forms
+  const [newCalendarDept, setNewCalendarDept] = useState('');
+  const [newCalendarYear, setNewCalendarYear] = useState('');
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [newEventDate, setNewEventDate] = useState('');
+  const [newEventTitle, setNewEventTitle] = useState('');
+
+  const showConfirmation = (message) => {
+    setConfirmation(message);
+    setTimeout(() => setConfirmation(''), 3000);
+  };
+
+  const handleManage = (calendar) => {
+    setSelectedCalendar(calendar);
+    setView('manage');
+  };
+
+  const handleView = (calendar) => {
+    setSelectedCalendar(calendar);
+    setView('view');
+  };
+
+  const handleBack = () => {
+    setSelectedCalendar(null);
+    setView('list');
+    setIsCreatingEvent(false);
+  };
+
+  const handleCancelCreateCalendar = () => {
+    setView('list');
+    setNewCalendarDept('');
+    setNewCalendarYear('');
+  };
+
+  const handleSaveCalendar = (e) => {
+    e.preventDefault();
+    console.log('Saving new calendar:', { department: newCalendarDept, year: newCalendarYear });
+    showConfirmation('New calendar created successfully!');
+    handleCancelCreateCalendar();
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    setEvents(prevEvents => prevEvents.filter(e => e.id !== eventId));
+    showConfirmation('Event deleted successfully!');
+  };
+
+  const handleSaveEvent = (e) => {
+    e.preventDefault();
+    const newEvent = {
+      id: `E${Date.now()}`,
+      calendarId: selectedCalendar.id,
+      date: newEventDate,
+      title: newEventTitle,
+    };
+    setEvents(prevEvents => [newEvent, ...prevEvents]);
+    setNewEventDate('');
+    setNewEventTitle('');
+    setIsCreatingEvent(false);
+    showConfirmation('Event created successfully!');
+  };
+
+  const eventsForCalendar = useMemo(() => {
+    if (!selectedCalendar) return [];
+    return events
+      .filter(e => e.calendarId === selectedCalendar.id)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+  }, [events, selectedCalendar]);
+
+  const renderHeader = () => {
+    if (view === 'list') {
+      return (
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-bold">Academic Calendar Management</h3>
+          <button onClick={() => setView('createCalendar')} className="px-5 py-2 rounded-lg bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold shadow-lg transform hover:-translate-y-0.5 transition">
+            Create New Calendar
+          </button>
+        </div>
+      );
+    }
+    if (view === 'manage' && selectedCalendar) {
+      return (
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <button onClick={handleBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+              <span>Back to Calendars</span>
+            </button>
+            <h3 className="text-2xl font-bold">Manage: {selectedCalendar.department} ({selectedCalendar.year})</h3>
+          </div>
+          <button onClick={() => setIsCreatingEvent(true)} className="px-5 py-2 rounded-lg bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold shadow-lg transform hover:-translate-y-0.5 transition">
+            Create New Event
+          </button>
+        </div>
+      );
+    }
+    if (view === 'view' && selectedCalendar) {
+      return (
+        <div className="mb-6">
+          <button onClick={handleBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group mb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            <span>Back to Calendars</span>
+          </button>
+          <h3 className="text-2xl font-bold">View: {selectedCalendar.department} ({selectedCalendar.year})</h3>
+        </div>
+      );
+    }
+    return <h3 className="text-2xl font-bold mb-6">Create New Academic Calendar</h3>;
+  };
+
+  const renderContent = () => {
+    switch (view) {
+      case 'manage':
+        return (
+          <div className="space-y-4">
+            {isCreatingEvent && (
+              <form onSubmit={handleSaveEvent} className="p-4 bg-white/10 rounded-xl border border-white/10 space-y-4">
+                <h5 className="font-semibold">Add New Event</h5>
+                <div className="flex gap-4 items-end">
+                  <div className="flex-1">
+                    <label htmlFor="event-date" className="block text-gray-300 text-sm font-bold mb-1">Date</label>
+                    <input id="event-date" type="date" value={newEventDate} onChange={e => setNewEventDate(e.target.value)} required className="shadow-inner w-full py-2 px-3 bg-gray-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                  </div>
+                  <div className="flex-grow">
+                    <label htmlFor="event-title" className="block text-gray-300 text-sm font-bold mb-1">Event Title / Comment</label>
+                    <input id="event-title" type="text" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} placeholder="e.g., Mid-term Exams Begin" required className="shadow-inner w-full py-2 px-3 bg-gray-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                  </div>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => setIsCreatingEvent(false)} className="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 font-semibold">Cancel</button>
+                    <button type="submit" className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 font-semibold">Create</button>
+                  </div>
+                </div>
+              </form>
+            )}
+            {eventsForCalendar.length > 0 ? eventsForCalendar.map(event => (
+              <div key={event.id} className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div>
+                  <p className="font-semibold text-purple-300">{new Date(event.date).toLocaleDateString('en-CA')}</p>
+                  <p className="text-gray-200">{event.title}</p>
+                </div>
+                <button onClick={() => handleDeleteEvent(event.id)} className="px-3 py-1 text-sm rounded-md bg-red-600 hover:bg-red-500 transition">Delete</button>
+              </div>
+            )) : <p className="text-gray-400 text-center py-4">No events found for this calendar.</p>}
+          </div>
+        );
+      case 'view':
+        return (
+          <div className="space-y-4">
+            {eventsForCalendar.length > 0 ? eventsForCalendar.map(event => (
+              <div key={event.id} className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <p className="font-semibold text-purple-300">{new Date(event.date).toLocaleDateString('en-CA')}</p>
+                <p className="text-gray-200">{event.title}</p>
+              </div>
+            )) : <p className="text-gray-400 text-center py-4">No events found for this calendar.</p>}
+          </div>
+        );
+      case 'createCalendar':
+        return (
+          <form onSubmit={handleSaveCalendar} className="space-y-6 max-w-2xl">
+            <div>
+              <label htmlFor="dept-select" className="block text-gray-300 text-sm font-bold mb-2">Department</label>
+              <select id="dept-select" value={newCalendarDept} onChange={e => setNewCalendarDept(e.target.value)} required className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <option value="" disabled>Select a department</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Physics">Physics</option>
+                <option value="English">English</option>
+                <option value="Mathematics">Mathematics</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="acad-year" className="block text-gray-300 text-sm font-bold mb-2">Academic Year</label>
+              <input id="acad-year" type="text" value={newCalendarYear} onChange={e => setNewCalendarYear(e.target.value)} placeholder="e.g., 2024-2025" required className="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-800/50 text-gray-100 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+            <div className="flex justify-end gap-4">
+              <button type="button" onClick={handleCancelCreateCalendar} className="px-6 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 font-semibold">Cancel</button>
+              <button type="submit" className="px-6 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 font-semibold">Save Calendar</button>
+            </div>
+          </form>
+        );
+      default: // 'list'
+        return (
+          <div>
+            <h4 className="text-xl font-semibold mb-4">Existing Calendars</h4>
+            <div className="space-y-4">
+              {academicCalendars.map(cal => (
+                <div key={cal.id} className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-lg text-purple-300">{cal.department}</p>
+                    <p className="text-sm text-gray-400">Academic Year: {cal.year} &bull; Status: {cal.status}</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <button onClick={() => handleManage(cal)} className="px-4 py-2 text-sm rounded-md bg-gray-600 hover:bg-gray-500 transition font-semibold">Manage</button>
+                    <button onClick={() => handleView(cal)} className="px-4 py-2 text-sm rounded-md bg-sky-600 hover:bg-sky-500 transition font-semibold">View</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <section>
+      {renderHeader()}
+      <div className="bg-black/20 p-6 rounded-2xl border border-white/10">
+        {renderContent()}
+      </div>
+      {confirmation && (
+        <div className="fixed bottom-8 right-8 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+          {confirmation}
+        </div>
+      )}
+    </section>
+  );
+};
