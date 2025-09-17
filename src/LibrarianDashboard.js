@@ -62,6 +62,35 @@ const circulationStats = {
     pendingReservations: 12,
 };
 
+const trendingBooks = [
+    { ...books[4], issues: 98 }, // Clean Code
+    { ...books[5], issues: 85 }, // Introduction to Algorithms
+    { ...books[3], issues: 76 }, // Data Structures & Algorithms
+    { ...books[1], issues: 65 }, // To Kill a Mockingbird
+    { ...books[2], issues: 62 }, // 1984
+    { ...books[0], issues: 51 }, // The Great Gatsby
+    { id: 'B007', title: 'The Pragmatic Programmer', author: 'Andrew Hunt', issues: 45 },
+    { id: 'B008', title: 'Sapiens: A Brief History of Humankind', author: 'Yuval Noah Harari', issues: 41 },
+    { id: 'B009', title: 'Atomic Habits', author: 'James Clear', issues: 38 },
+    { id: 'B010', title: 'Dune', author: 'Frank Herbert', issues: 35 },
+].sort((a, b) => b.issues - a.issues);
+
+const popularAuthors = Object.values(
+    trendingBooks.reduce((acc, book) => {
+        if (!acc[book.author]) {
+            acc[book.author] = { name: book.author, totalIssues: 0 };
+        }
+        acc[book.author].totalIssues += book.issues;
+        return acc;
+    }, {})
+).sort((a, b) => b.totalIssues - a.totalIssues);
+
+const popularGenres = [
+    { name: 'Computer Science', issues: 259 },
+    { name: 'Classic', issues: 178 },
+    { name: 'Dystopian', issues: 62 },
+].sort((a, b) => b.issues - a.issues);
+
 const SidebarButton = ({ icon, label, view, currentView, setCurrentView }) => (
   <button
     onClick={() => setCurrentView(view)}
@@ -260,17 +289,42 @@ const BooksAndResourcesView = () => (
 const CirculationView = () => (
     <section>
         <h3 className="text-2xl font-bold mb-6">Circulation Statistics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard label="Daily Issues" value={circulationStats.dailyIssues} icon={<ChartBarIcon />} />
-            <StatCard label="Daily Returns" value={circulationStats.dailyReturns} icon={<ChartBarIcon />} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6 mb-8">
+            <StatCard label="Total Issues" value={stats.booksIssued} icon={<ChartBarIcon />} />
+            <StatCard label="Total Returns" value={18} icon={<ChartBarIcon />} />
+            <StatCard label="Today Issues" value={circulationStats.dailyIssues} icon={<ChartBarIcon />} />
+            <StatCard label="Today Returns" value={circulationStats.dailyReturns} icon={<ChartBarIcon />} />
             <StatCard label="Fine Collected (Today)" value={`$${circulationStats.fineCollectedToday}`} icon={<DocumentReportIcon />} />
-            <StatCard label="Fine Collected (Month)" value={`$${circulationStats.fineCollectedMonth.toLocaleString()}`} icon={<DocumentReportIcon />} />
+            <StatCard label="Fine Collected (Week)" value={`$${circulationStats.fineCollectedMonth.toLocaleString()}`} icon={<DocumentReportIcon />} />
             <StatCard label="Pending Requests" value={circulationStats.pendingRequests} icon={<BellIcon />} />
             <StatCard label="Pending Reservations" value={circulationStats.pendingReservations} icon={<BellIcon />} />
         </div>
         <DashboardCard title="Daily/Weekly/Monthly Trends">
-            <div className="h-64 flex items-center justify-center text-gray-400">
-                (Chart placeholder: Bar chart for issue and return trends)
+            <div className="h-72 pr-4">
+                <div className="h-full flex flex-col">
+                    <div className="flex-grow grid grid-cols-3 gap-8 items-end text-center">
+                        {/* Daily */}
+                        <div className="flex justify-center items-end gap-2 h-full">
+                            <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.dailyIssues / 200) * 100}%` }} title={`Issued: ${circulationStats.dailyIssues}`}></div>
+                            <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.dailyReturns / 200) * 100}%` }} title={`Returned: ${circulationStats.dailyReturns}`}></div>
+                        </div>
+                        {/* Weekly */}
+                        <div className="flex justify-center items-end gap-2 h-full">
+                            <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.weeklyIssues / 200) * 100}%` }} title={`Issued: ${circulationStats.weeklyIssues}`}></div>
+                            <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.weeklyReturns / 200) * 100}%` }} title={`Returned: ${circulationStats.weeklyReturns}`}></div>
+                        </div>
+                        {/* Monthly */}
+                        <div className="flex justify-center items-end gap-2 h-full">
+                            <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.monthlyIssues / 700) * 100}%` }} title={`Issued: ${circulationStats.monthlyIssues}`}></div>
+                            <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.monthlyReturns / 700) * 100}%` }} title={`Returned: ${circulationStats.monthlyReturns}`}></div>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-8 text-center text-sm font-semibold text-gray-400 pt-2 border-t-2 border-gray-700">
+                        <span>Daily</span>
+                        <span>Weekly</span>
+                        <span>Monthly</span>
+                    </div>
+                </div>
             </div>
         </DashboardCard>
     </section>
@@ -328,17 +382,91 @@ const AnalyticsView = () => (
         <h3 className="text-2xl font-bold mb-6">Analytics & Reports</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <DashboardCard title="Usage Trends">
-                <div className="h-48 flex items-center justify-center text-gray-400">(Chart: Who borrows what, when)</div>
+                <div className="space-y-3">
+                    <h5 className="font-semibold text-purple-300">Top 10 Trending Books (by issues)</h5>
+                    <div className="h-64 overflow-y-auto pr-2 space-y-2">
+                        {trendingBooks.slice(0, 10).map((book, index) => (
+                            <div key={book.id} className="bg-white/5 p-3 rounded-lg flex items-center justify-between border border-transparent hover:border-purple-500/50 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-sm font-bold text-gray-400 w-6 text-center">{index + 1}.</span>
+                                    <div>
+                                        <p className="font-semibold text-gray-100 truncate">{book.title}</p>
+                                        <p className="text-xs text-gray-400">by {book.author}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 text-green-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" /></svg>
+                                    <span className="text-sm font-semibold">{book.issues}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </DashboardCard>
             <DashboardCard title="Popular Authors/Genres">
-                <div className="h-48 flex items-center justify-center text-gray-400">(List/Chart: Top authors and genres)</div>
+                <div className="space-y-3">
+                    <h5 className="font-semibold text-purple-300">Top 10 Popular Authors</h5>
+                    <div className="h-64 overflow-y-auto pr-2 space-y-2">
+                        {popularAuthors.slice(0, 10).map((author, index) => (
+                            <div key={author.name} className="bg-white/5 p-3 rounded-lg flex items-center justify-between border border-transparent hover:border-purple-500/50 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-sm font-bold text-gray-400 w-6 text-center">{index + 1}.</span>
+                                    <div>
+                                        <p className="font-semibold text-gray-100 truncate">{author.name}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 text-green-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" /></svg>
+                                    <span className="text-sm font-semibold">{author.totalIssues}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </DashboardCard>
             <DashboardCard title="Resource Utilization">
-                <div className="h-48 flex items-center justify-center text-gray-400">(Chart: Utilization rates of different resources)</div>
+                <ResourcePieChart />
             </DashboardCard>
         </div>
     </section>
 );
+
+const ResourcePieChart = () => {
+    // Easily editable data for the pie chart
+    const resources = ['Books', 'E-books', 'Journals', 'Computers', 'Study Rooms'];
+    const percentages = [55, 20, 10, 12, 3];
+    const colors = ['#8B5CF6', '#EC4899', '#10B981', '#3B82F6', '#F59E0B'];
+
+    let cumulativePercentage = 0;
+    const gradientParts = percentages.map((p, i) => {
+        const start = cumulativePercentage;
+        cumulativePercentage += p;
+        const end = cumulativePercentage;
+        return `${colors[i]} ${start}% ${end}%`;
+    });
+
+    const conicGradient = `conic-gradient(${gradientParts.join(', ')})`;
+
+    return (
+        <div className="flex flex-col md:flex-row items-center gap-6">
+            <div 
+                className="w-36 h-36 rounded-full"
+                style={{ background: conicGradient }}
+                role="img"
+                aria-label="Resource utilization pie chart"
+            ></div>
+            <div className="space-y-2 text-sm">
+                <h5 className="font-semibold text-purple-300 mb-2">Utilization Breakdown</h5>
+                {resources.map((resource, i) => (
+                    <div key={resource} className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: colors[i] }}></div>
+                        <span>{resource}: <span className="font-semibold">{percentages[i]}%</span></span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 const AdminView = () => (
     <section>
