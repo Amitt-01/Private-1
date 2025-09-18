@@ -174,8 +174,8 @@ export default function LibrarianDashboard() {
   const renderView = () => {
     switch (currentView) {
         case 'dashboard': return <DashboardView stats={stats} />;
-        case 'userManagement': return <UserManagementView members={members} setMembers={setMembers} />;
-        case 'books': return <BooksAndResourcesView stats={stats} />;
+        case 'userManagement': return <UserManagementView members={members} setMembers={setMembers} setIssuedBooks={setIssuedBooks} setBooks={setBooks} />;
+        case 'books': return <BooksAndResourcesView stats={stats} issuedBooks={issuedBooks} />;
         case 'circulation': return <CirculationView stats={stats} issuedBooks={issuedBooks} />;
         case 'search': return <SearchView books={books} searchTerm={searchTerm} setSearchTerm={setSearchTerm} selectedBook={selectedBook} setSelectedBook={setSelectedBook} onUpdateBook={handleUpdateBook} onRemoveBook={handleRemoveBook} />;
         case 'reports': return <AnalyticsView books={books} />;
@@ -281,7 +281,7 @@ const DashboardView = ({ stats }) => (
     </>
 );
 
-const UserManagementView = ({ members, setMembers }) => {
+const UserManagementView = ({ members, setMembers, setIssuedBooks, setBooks }) => {
     const [studentId, setStudentId] = useState('');
     const [searchedStudent, setSearchedStudent] = useState(null);
     const [searchError, setSearchError] = useState('');
@@ -314,6 +314,10 @@ const UserManagementView = ({ members, setMembers }) => {
         setMembers(prev => [newStudent, ...prev]);
         setIsAddingStudent(false);
         setNewlyAddedCard(newStudent); // Show the generated card
+    // Add an empty issue history for the new member
+    if (!pastIssues[newStudent.id]) {
+        pastIssues[newStudent.id] = [];
+    }
         setSearchedStudent(newStudent); // Also set as searched to display profile
         setStudentId(newStudent.id); // Populate search box with new ID
     };
@@ -327,8 +331,14 @@ const UserManagementView = ({ members, setMembers }) => {
             returnDate: `Due in ${issueData.days} days`,
             status: 'Issued',
         };
-        // This is a mock update. In a real app, you'd have a more robust state management.
+        // This is a mock update. In a real app, you'd have a more robust state management like Redux or Context API.
         pastIssues[searchedStudent.id] = [newIssue, ...(pastIssues[searchedStudent.id] || [])];
+        setIssuedBooks(prev => [newIssue, ...prev]);
+        setBooks(prevBooks => prevBooks.map(book => 
+            book.id.toLowerCase() === issueData.bookId.toLowerCase() 
+                ? { ...book, status: 'Issued' } 
+                : book
+        ));
         alert(`Book "${issueData.bookName}" issued to ${searchedStudent.name}.`);
         setIsIssuingBook(false);
     };
@@ -342,6 +352,12 @@ const UserManagementView = ({ members, setMembers }) => {
 
         if (issueIndex > -1) {
             pastIssues[searchedStudent.id].splice(issueIndex, 1);
+            setIssuedBooks(prev => prev.filter(b => b.bookId.toLowerCase() !== bookIdToReturn.toLowerCase()));
+            setBooks(prevBooks => prevBooks.map(book => 
+                book.id.toLowerCase() === bookIdToReturn.toLowerCase() 
+                    ? { ...book, status: 'Available' } 
+                    : book
+            ));
             alert(`Book ID ${bookIdToReturn} has been returned.`);
             setIsReturningBook(false);
         } else {
@@ -536,7 +552,10 @@ const LibraryCard = ({ student }) => (
     <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-xl text-white shadow-2xl">
         <div className="flex justify-between items-center border-b-2 border-white/30 pb-2 mb-4">
             <h4 className="font-bold text-lg">ARPANAP University Library</h4>
-            <BookOpenIcon className="h-8 w-8" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 16c1.255 0 2.443-.29 3.5-.804V4.804z" />
+                <path d="M14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0114.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7_968 0 0014.5 4z" />
+            </svg>
         </div>
         <div className="flex items-center gap-4">
             <img src={student.avatar} alt={student.name} className="w-20 h-20 rounded-full border-2 border-white" />
@@ -548,14 +567,14 @@ const LibraryCard = ({ student }) => (
     </div>
 );
 
-const BooksAndResourcesView = ({ stats }) => (
+const BooksAndResourcesView = ({ stats, issuedBooks }) => (
     <section>
         <div className="flex justify-between items-center mb-6">
             <h3 className="text-2xl font-bold">Books & Resources</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard label="Total Books Available" value={stats.totalBooks.toLocaleString()} icon={<BookOpenIcon />} />
+            <StatCard label="Total Books" value={stats.totalBooks.toLocaleString()} icon={<BookOpenIcon />} />
             <StatCard label="Books Issued" value={stats.booksIssued} icon={<ChartBarIcon />} />
             <StatCard label="Books Returned (Today)" value={18} icon={<ChartBarIcon />} />
             <StatCard label="Overdue Books" value={stats.overdueBooks} icon={<BellIcon />} />
@@ -577,7 +596,7 @@ const CirculationView = ({ stats, issuedBooks }) => (
     <section>
         <h3 className="text-2xl font-bold mb-6">Circulation Statistics</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard label="Total Issues" value={stats.booksIssued} icon={<ChartBarIcon />} />
+            <StatCard label="Total Issues (Currently)" value={stats.booksIssued} icon={<ChartBarIcon />} />
             <StatCard label="Total Returns" value={18} icon={<ChartBarIcon />} />
             <StatCard label="Today Issues" value={circulationStats.dailyIssues} icon={<ChartBarIcon />} />
             <StatCard label="Today Returns" value={circulationStats.dailyReturns} icon={<ChartBarIcon />} />
@@ -618,8 +637,8 @@ const CirculationView = ({ stats, issuedBooks }) => (
             <DashboardCard title="Recently Issued Books">
                 <div className="space-y-2 h-72 overflow-y-auto pr-2">
                     {issuedBooks.length > 0 ? issuedBooks.map(book => (
-                        <div key={book.id} className="bg-white/5 p-3 rounded-lg">
-                            <p className="font-semibold">{book.bookNumber} issued to {book.personName}</p>
+                        <div key={book.bookId + book.issueDate} className="bg-white/5 p-3 rounded-lg">
+                            <p className="font-semibold">{book.title} ({book.bookId})</p>
                             <p className="text-xs text-gray-400">Issued on: {book.issueDate} for {book.days} days</p>
                         </div>
                     )) : (
