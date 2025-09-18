@@ -28,11 +28,19 @@ const notifications = [
 ];
 
 
-const members = [
+const initialMembers = [
     { id: 'M001', name: 'Alex Johnson', avatar: alexJohnsonAvatar, type: 'Student', status: 'Active', renewalDate: '2025-08-15' },
     { id: 'M002', name: 'Dr. Mohd. Parvej', avatar: brendaSmithAvatar, type: 'Faculty', status: 'Active', renewalDate: '2025-06-30' },
     { id: 'M003', name: 'Carlos Gomez', avatar: brendaSmithAvatar, type: 'Student', status: 'Inactive', renewalDate: '2024-01-20' },
 ];
+
+const pastIssues = {
+    'M001': [
+        { bookId: 'B002', title: 'To Kill a Mockingbird', issueDate: '2024-04-10', returnDate: '2024-04-24', status: 'Returned' },
+        { bookId: 'B005', title: 'Clean Code', issueDate: '2024-04-25', returnDate: '2024-05-10', status: 'Late Return', fine: '$2.50' },
+        { bookId: 'B006', title: 'Introduction to Algorithms', issueDate: '2024-05-01', returnDate: '2024-05-15', status: 'Returned' },
+    ]
+};
 
 const circulationStats = {
     dailyIssues: 25,
@@ -127,6 +135,8 @@ export default function LibrarianDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBook, setSelectedBook] = useState(null);
   const [books, setBooks] = useState(initialBooks);
+  const [issuedBooks, setIssuedBooks] = useState([]);
+  const [members, setMembers] = useState(initialMembers);
 
   const stats = {
     totalBooks: books.length,
@@ -164,9 +174,9 @@ export default function LibrarianDashboard() {
   const renderView = () => {
     switch (currentView) {
         case 'dashboard': return <DashboardView stats={stats} />;
-        case 'userManagement': return <UserManagementView />;
+        case 'userManagement': return <UserManagementView members={members} setMembers={setMembers} />;
         case 'books': return <BooksAndResourcesView stats={stats} />;
-        case 'circulation': return <CirculationView stats={stats} />;
+        case 'circulation': return <CirculationView stats={stats} issuedBooks={issuedBooks} />;
         case 'search': return <SearchView books={books} searchTerm={searchTerm} setSearchTerm={setSearchTerm} selectedBook={selectedBook} setSelectedBook={setSelectedBook} onUpdateBook={handleUpdateBook} onRemoveBook={handleRemoveBook} />;
         case 'reports': return <AnalyticsView books={books} />;
         case 'admin': return <AdminView setCurrentView={setCurrentView} onAddBook={handleAddBook} onUpdateBook={handleUpdateBook} />;
@@ -271,29 +281,291 @@ const DashboardView = ({ stats }) => (
     </>
 );
 
-const UserManagementView = () => (
-    <section>
-        <h3 className="text-2xl font-bold mb-6">User Management</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <StatCard label="Active Users" value={members.filter(m => m.status === 'Active').length} icon={<UserGroupIcon />} />
-            <StatCard label="Inactive Users" value={members.filter(m => m.status === 'Inactive').length} icon={<UserGroupIcon className="text-gray-500" />} />
-            <StatCard label="Renewals Due (Next 30 Days)" value={2} icon={<BellIcon />} />
-        </div>
-        <DashboardCard title="All Members">
-             <div className="space-y-2">
-                {members.map(member => (
-                    <div key={member.id} className="grid grid-cols-4 gap-4 items-center bg-white/5 hover:bg-white/10 transition px-4 py-2 rounded-lg">
-                        <div className="col-span-2 flex items-center gap-3">
-                            <img src={member.avatar} alt={member.name} className="w-10 h-10 rounded-full" />
-                            <div>
-                                <p className="font-semibold">{member.name}</p>
-                                <p className="text-xs text-gray-400">{member.id}</p>
+const UserManagementView = ({ members, setMembers }) => {
+    const [studentId, setStudentId] = useState('');
+    const [searchedStudent, setSearchedStudent] = useState(null);
+    const [searchError, setSearchError] = useState('');
+    const [isAddingStudent, setIsAddingStudent] = useState(false);
+    const [newlyAddedCard, setNewlyAddedCard] = useState(null);
+    const [isIssuingBook, setIsIssuingBook] = useState(false);
+    const [isReturningBook, setIsReturningBook] = useState(false);
+
+
+    const handleStudentSearch = (e, studentIdToSearch = studentId) => {
+        e.preventDefault();
+        setSearchError('');
+        const student = members.find(m => m.id.toLowerCase() === studentId.toLowerCase());
+        if (student) {
+            setSearchedStudent(student);
+        } else {
+            setSearchedStudent(null);
+            setSearchError(`Student with ID "${studentId}" not found.`);
+        }
+    };
+
+    const handleAddStudent = (newStudentData) => {
+        const newStudent = {
+            ...newStudentData,
+            id: `M${String(Date.now()).slice(-4)}`, // Generate a simple unique ID
+            avatar: alexJohnsonAvatar, // Default avatar
+            status: 'Active',
+            renewalDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0], // Renewal in 1 year
+        };
+        setMembers(prev => [newStudent, ...prev]);
+        setIsAddingStudent(false);
+        setNewlyAddedCard(newStudent); // Show the generated card
+        setSearchedStudent(newStudent); // Also set as searched to display profile
+        setStudentId(newStudent.id); // Populate search box with new ID
+    };
+
+    const handleIssueBookToStudent = (issueData) => {
+        if (!searchedStudent) return;
+        const newIssue = {
+            bookId: issueData.bookId,
+            title: issueData.bookName,
+            issueDate: new Date().toISOString().split('T')[0],
+            returnDate: `Due in ${issueData.days} days`,
+            status: 'Issued',
+        };
+        // This is a mock update. In a real app, you'd have a more robust state management.
+        pastIssues[searchedStudent.id] = [newIssue, ...(pastIssues[searchedStudent.id] || [])];
+        alert(`Book "${issueData.bookName}" issued to ${searchedStudent.name}.`);
+        setIsIssuingBook(false);
+    };
+
+    const handleReturnBook = ({ bookIdToReturn }) => {
+        if (!searchedStudent) return;
+
+        const issueIndex = (pastIssues[searchedStudent.id] || []).findIndex(
+            issue => issue.bookId.toLowerCase() === bookIdToReturn.toLowerCase() && issue.status === 'Issued'
+        );
+
+        if (issueIndex > -1) {
+            pastIssues[searchedStudent.id].splice(issueIndex, 1);
+            alert(`Book ID ${bookIdToReturn} has been returned.`);
+            setIsReturningBook(false);
+        } else {
+            alert(`Error: Book ID ${bookIdToReturn} is not currently issued to this student.`);
+        }
+    };
+
+    return (
+        <section>
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold">User Management</h3>
+                <button onClick={() => { setIsAddingStudent(true); setSearchedStudent(null); }} className="px-5 py-2 rounded-lg bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold shadow-lg transform hover:-translate-y-0.5 transition">Add New Student</button>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <DashboardCard title="Find Student">
+                        <form onSubmit={handleStudentSearch} className="flex gap-2 mb-4">
+                            <input 
+                                type="text" 
+                                value={studentId}
+                                onChange={e => setStudentId(e.target.value)}
+                                placeholder="Enter Student ID (e.g., M001)" 
+                                className="flex-grow shadow-inner appearance-none border border-gray-700 rounded-lg py-2 px-4 bg-gray-800/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <button type="submit" className="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 font-semibold">Search</button>
+                        </form>
+                        {searchError && <p className="text-red-400 text-sm">{searchError}</p>}
+                    </DashboardCard>
+                    {isAddingStudent && (
+                        <AddStudentForm onSave={handleAddStudent} onCancel={() => setIsAddingStudent(false)} />
+                    )}
+                    <DashboardCard title="Digital Library Card">
+                        {newlyAddedCard ? <LibraryCard student={newlyAddedCard} /> : <div className="text-center text-gray-400 py-16">Add or search for a student to generate their card.</div>}
+                    </DashboardCard>
+                    <div className="mt-8">
+                        <DashboardCard title="All Members">
+                            <div className="space-y-2">
+                                {members.slice(0, 5).map(member => (
+                                    <div key={member.id} className="grid grid-cols-4 gap-4 items-center bg-white/5 hover:bg-white/10 transition px-4 py-2 rounded-lg">
+                                        <div className="col-span-2 flex items-center gap-3">
+                                            <img src={member.avatar} alt={member.name} className="w-10 h-10 rounded-full" />
+                                            <div>
+                                                <p className="font-semibold">{member.name}</p>
+                                                <p className="text-xs text-gray-400">{member.id}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-gray-300">{member.type}</div>
+                                        <div className="text-center">
+                                            <span className={`px-2 py-1 text-xs font-bold rounded-full ${member.status === 'Active' ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'}`}>{member.status}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </DashboardCard>
+                    </div>
+                </div>
+                {searchedStudent && (
+                    <DashboardCard title="Student Profile">
+                        <div className="flex flex-col items-center">
+                            <img src={searchedStudent.avatar} alt={searchedStudent.name} className="w-24 h-24 rounded-full border-4 border-purple-500 mb-4" />
+                            <div className="text-center mb-6">
+                                <p className="text-xl font-bold">{searchedStudent.name}</p>
+                                <p className="text-gray-400">{searchedStudent.id}</p>
+                            </div>
+                            <div className="w-full flex gap-2 mb-6">
+                                <button onClick={() => setIsIssuingBook(true)} className="flex-1 px-5 py-2 rounded-lg bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold shadow-lg transform hover:-translate-y-0.5 transition">
+                                    Issue Book
+                                </button>
+                                <button onClick={() => setIsReturningBook(true)} className="flex-1 px-5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold shadow-lg transform hover:-translate-y-0.5 transition">
+                                    Return Book
+                                </button>
+                            </div>
+                            {isReturningBook && <ReturnBookForm onReturn={handleReturnBook} onCancel={() => setIsReturningBook(false)} />}
+                            {isIssuingBook && (
+                                <IssueBookToStudentForm onSave={handleIssueBookToStudent} onCancel={() => setIsIssuingBook(false)} />
+                            )}
+                            <div className="w-full">
+                                <h5 className="font-semibold text-purple-300 mb-2">Past Issue History</h5>
+                                <div className="space-y-2 h-48 overflow-y-auto pr-2">
+                                    {pastIssues[searchedStudent.id] ? pastIssues[searchedStudent.id].map((issue, index) => (
+                                        <div key={issue.bookId} className="bg-white/5 p-3 rounded-lg">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="font-semibold">{issue.title} <span className="text-gray-400 font-normal">({issue.bookId})</span></p>
+                                                    <p className="text-xs text-gray-400">Issued: {issue.issueDate} | Returned: {issue.returnDate}</p>
+                                                </div>
+                                                {issue.fine && <span className="text-xs font-bold text-red-400 bg-red-400/10 px-2 py-1 rounded-full">Fine: {issue.fine}</span>}
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <p className="text-gray-400 text-center pt-8">No past issue history found.</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                        <div className="text-gray-300">{member.type}</div>
-                        <div className="text-center">
-                            <span className={`px-2 py-1 text-xs font-bold rounded-full ${member.status === 'Active' ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'}`}>{member.status}</span>
+                    </DashboardCard>
+                )}
+            </div>
+        </section>
+    );
+};
+
+const ReturnBookForm = ({ onReturn, onCancel }) => {
+    const [bookIdToReturn, setBookIdToReturn] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onReturn({ bookIdToReturn });
+    };
+
+    return (
+        <div className="w-full mb-6">
+            <DashboardCard title="Return a Book">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <input type="text" value={bookIdToReturn} onChange={e => setBookIdToReturn(e.target.value)} placeholder="Enter Book ID to Return" required className="w-full py-2 px-3 bg-gray-800/60 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-400" />
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs text-yellow-400">Late Fine (if any): $5.00</p>
+                        <div className="flex gap-2">
+                            <button type="button" onClick={onCancel} className="px-4 py-2 text-sm rounded-md bg-gray-600 hover:bg-gray-500 transition font-semibold">Cancel</button>
+                            <button type="submit" className="px-4 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-500 transition font-semibold">Process Return</button>
                         </div>
+                    </div>
+                </form>
+            </DashboardCard>
+        </div>
+    );
+};
+
+const IssueBookToStudentForm = ({ onSave, onCancel }) => {
+    const [bookName, setBookName] = useState('');
+    const [bookId, setBookId] = useState('');
+    const [days, setDays] = useState('14');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave({ bookName, bookId, days });
+    };
+
+    return (
+        <div className="w-full mb-6">
+            <DashboardCard title="Issue Book to Student">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <input type="text" value={bookName} onChange={e => setBookName(e.target.value)} placeholder="Book Name" required className="w-full py-2 px-3 bg-gray-800/60 rounded-md focus:outline-none focus:ring-1 focus:ring-green-400" />
+                    <div className="grid grid-cols-2 gap-4">
+                        <input type="text" value={bookId} onChange={e => setBookId(e.target.value)} placeholder="Book ID" required className="w-full py-2 px-3 bg-gray-800/60 rounded-md focus:outline-none focus:ring-1 focus:ring-green-400" />
+                        <input type="number" value={days} onChange={e => setDays(e.target.value)} placeholder="Days to Return" required className="w-full py-2 px-3 bg-gray-800/60 rounded-md focus:outline-none focus:ring-1 focus:ring-green-400" />
+                    </div>
+                    <div className="flex justify-end gap-2 pt-2">
+                        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm rounded-md bg-gray-600 hover:bg-gray-500 transition font-semibold">Cancel</button>
+                        <button type="submit" className="px-4 py-2 text-sm rounded-md bg-green-600 hover:bg-green-500 transition font-semibold">Save Issue</button>
+                    </div>
+                </form>
+            </DashboardCard>
+        </div>
+    );
+};
+
+const AddStudentForm = ({ onSave, onCancel }) => {
+    const [name, setName] = useState('');
+    const [type, setType] = useState('Student');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave({ name, type });
+    };
+
+    return (
+        <DashboardCard title="Add New Student">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label className="block text-sm font-bold mb-2 text-gray-300">Student Name</label>
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Jane Doe" required className="w-full py-2 px-3 bg-gray-800/60 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400" />
+                </div>
+                <div>
+                    <label className="block text-sm font-bold mb-2 text-gray-300">Member Type</label>
+                    <select value={type} onChange={e => setType(e.target.value)} className="w-full py-2 px-3 bg-gray-800/60 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400">
+                        <option>Student</option>
+                        <option>Faculty</option>
+                        <option>Staff</option>
+                    </select>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                    <button type="button" onClick={onCancel} className="px-4 py-2 text-sm rounded-md bg-gray-600 hover:bg-gray-500 transition font-semibold">Cancel</button>
+                    <button type="submit" className="px-4 py-2 text-sm rounded-md bg-green-600 hover:bg-green-500 transition font-semibold">Generate Card</button>
+                </div>
+            </form>
+        </DashboardCard>
+    );
+};
+
+const LibraryCard = ({ student }) => (
+    <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-xl text-white shadow-2xl">
+        <div className="flex justify-between items-center border-b-2 border-white/30 pb-2 mb-4">
+            <h4 className="font-bold text-lg">ARPANAP University Library</h4>
+            <BookOpenIcon className="h-8 w-8" />
+        </div>
+        <div className="flex items-center gap-4">
+            <img src={student.avatar} alt={student.name} className="w-20 h-20 rounded-full border-2 border-white" />
+            <div>
+                <p className="text-2xl font-bold tracking-wider">{student.name}</p>
+                <p className="font-mono bg-black/20 inline-block px-2 py-0.5 rounded mt-1">{student.id}</p>
+            </div>
+        </div>
+    </div>
+);
+
+const BooksAndResourcesView = ({ stats }) => (
+    <section>
+        <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold">Books & Resources</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <StatCard label="Total Books Available" value={stats.totalBooks.toLocaleString()} icon={<BookOpenIcon />} />
+            <StatCard label="Books Issued" value={stats.booksIssued} icon={<ChartBarIcon />} />
+            <StatCard label="Books Returned (Today)" value={18} icon={<ChartBarIcon />} />
+            <StatCard label="Overdue Books" value={stats.overdueBooks} icon={<BellIcon />} />
+        </div>
+        <DashboardCard title="Most Borrowed Books">
+            <div className="space-y-2">
+                {trendingBooks.slice(0, 5).map((book) => (
+                    <div key={book.id} className="grid grid-cols-3 gap-4 items-center bg-white/5 px-4 py-2 rounded-lg">
+                        <div className="font-semibold col-span-2">{book.title}</div>
+                        <div className="text-gray-300">{book.author}</div>
                     </div>
                 ))}
             </div>
@@ -301,22 +573,7 @@ const UserManagementView = () => (
     </section>
 );
 
-const BooksAndResourcesView = ({ stats }) => (
-    <section>
-        <h3 className="text-2xl font-bold mb-6">Books & Resources</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard label="Total Books Available" value={stats.totalBooks.toLocaleString()} icon={<BookOpenIcon />} />
-            <StatCard label="Books Issued" value={stats.booksIssued} icon={<ChartBarIcon />} />
-            <StatCard label="Books Returned (Today)" value={18} icon={<ChartBarIcon />} />
-            <StatCard label="Overdue Books" value={stats.overdueBooks} icon={<BellIcon />} />
-        </div>
-        <DashboardCard title="Most Borrowed Books/Categories">
-            <p className="text-gray-400">(Placeholder for most borrowed books/categories list)</p>
-        </DashboardCard>
-    </section>
-);
-
-const CirculationView = ({ stats }) => (
+const CirculationView = ({ stats, issuedBooks }) => (
     <section>
         <h3 className="text-2xl font-bold mb-6">Circulation Statistics</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -329,34 +586,48 @@ const CirculationView = ({ stats }) => (
             <StatCard label="Pending Requests" value={circulationStats.pendingRequests} icon={<BellIcon />} />
             <StatCard label="Pending Reservations" value={circulationStats.pendingReservations} icon={<BellIcon />} />
         </div>
-        <DashboardCard title="Daily/Weekly/Monthly Trends">
-            <div className="h-72 pr-4">
-                <div className="h-full flex flex-col">
-                    <div className="flex-grow grid grid-cols-3 gap-8 items-end text-center">
-                        {/* Daily */}
-                        <div className="flex justify-center items-end gap-2 h-full">
-                            <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.dailyIssues / 200) * 100}%` }} title={`Issued: ${circulationStats.dailyIssues}`}></div>
-                            <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.dailyReturns / 200) * 100}%` }} title={`Returned: ${circulationStats.dailyReturns}`}></div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <DashboardCard title="Daily/Weekly/Monthly Trends">
+                <div className="h-72 pr-4">
+                    <div className="h-full flex flex-col">
+                        <div className="flex-grow grid grid-cols-3 gap-8 items-end text-center">
+                            {/* Daily */}
+                            <div className="flex justify-center items-end gap-2 h-full">
+                                <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.dailyIssues / 200) * 100}%` }} title={`Issued: ${circulationStats.dailyIssues}`}></div>
+                                <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.dailyReturns / 200) * 100}%` }} title={`Returned: ${circulationStats.dailyReturns}`}></div>
+                            </div>
+                            {/* Weekly */}
+                            <div className="flex justify-center items-end gap-2 h-full">
+                                <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.weeklyIssues / 200) * 100}%` }} title={`Issued: ${circulationStats.weeklyIssues}`}></div>
+                                <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.weeklyReturns / 200) * 100}%` }} title={`Returned: ${circulationStats.weeklyReturns}`}></div>
+                            </div>
+                            {/* Monthly */}
+                            <div className="flex justify-center items-end gap-2 h-full">
+                                <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.monthlyIssues / 700) * 100}%` }} title={`Issued: ${circulationStats.monthlyIssues}`}></div>
+                                <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.monthlyReturns / 700) * 100}%` }} title={`Returned: ${circulationStats.monthlyReturns}`}></div>
+                            </div>
                         </div>
-                        {/* Weekly */}
-                        <div className="flex justify-center items-end gap-2 h-full">
-                            <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.weeklyIssues / 200) * 100}%` }} title={`Issued: ${circulationStats.weeklyIssues}`}></div>
-                            <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.weeklyReturns / 200) * 100}%` }} title={`Returned: ${circulationStats.weeklyReturns}`}></div>
+                        <div className="grid grid-cols-3 gap-8 text-center text-sm font-semibold text-gray-400 pt-2 border-t-2 border-gray-700">
+                            <span>Daily</span>
+                            <span>Weekly</span>
+                            <span>Monthly</span>
                         </div>
-                        {/* Monthly */}
-                        <div className="flex justify-center items-end gap-2 h-full">
-                            <div className="w-12 bg-green-600/80 hover:bg-green-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.monthlyIssues / 700) * 100}%` }} title={`Issued: ${circulationStats.monthlyIssues}`}></div>
-                            <div className="w-12 bg-red-600/80 hover:bg-red-500 rounded-t-lg transition-all" style={{ height: `${(circulationStats.monthlyReturns / 700) * 100}%` }} title={`Returned: ${circulationStats.monthlyReturns}`}></div>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-8 text-center text-sm font-semibold text-gray-400 pt-2 border-t-2 border-gray-700">
-                        <span>Daily</span>
-                        <span>Weekly</span>
-                        <span>Monthly</span>
                     </div>
                 </div>
-            </div>
-        </DashboardCard>
+            </DashboardCard>
+            <DashboardCard title="Recently Issued Books">
+                <div className="space-y-2 h-72 overflow-y-auto pr-2">
+                    {issuedBooks.length > 0 ? issuedBooks.map(book => (
+                        <div key={book.id} className="bg-white/5 p-3 rounded-lg">
+                            <p className="font-semibold">{book.bookNumber} issued to {book.personName}</p>
+                            <p className="text-xs text-gray-400">Issued on: {book.issueDate} for {book.days} days</p>
+                        </div>
+                    )) : (
+                        <p className="text-gray-400 text-center pt-12">No books issued yet.</p>
+                    )}
+                </div>
+            </DashboardCard>
+        </div>
     </section>
 );
 
