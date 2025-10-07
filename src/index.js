@@ -13,11 +13,8 @@ const StudentDashboard = lazy(() => import('./StudentDashboard'));
 const AboutPage = lazy(() => import('./AboutPage'));
 const ContactPage = lazy(() => import('./ContactPage'));
 const HRDashboard = lazy(() => import('./HRDashboard'));
-<<<<<<< HEAD
 const LibrarianDashboard = lazy(() => import('./LibrarianDashboard'));
-=======
-const AcDashboard = lazy(() => import('./AccountantDashboard'));
->>>>>>> module
+const AccountantDashboard = lazy(() => import('./AccountantDashboard'));
 
 // A fallback component to show while the lazy-loaded pages are being fetched.
 const LoadingFallback = () => (
@@ -46,11 +43,8 @@ root.render(
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/hr-dashboard" element={<HRDashboard />} /> 
           <Route path="/registrar-dashboard" element={<RegistrarDashboard/>} /> 
-<<<<<<< HEAD
-          <Route path="/librarian-dashboard" element={<LibrarianDashboard/>} />
-=======
-          <Route path="/accountant-dashboard" element={<AcDashboard/>} />
->>>>>>> module
+          <Route path="/accountant-dashboard" element={<AccountantDashboard/>} />
+          <Route path="/librarian-dashboard" element={<LibrarianDashboard />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
